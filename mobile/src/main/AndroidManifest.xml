@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="info.toyonos.hfr4droid.common">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Version 0.8.0 -->
-    <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="14" />
-    <application />
+    <application android:exported="true">
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+    </application>
 </manifest>

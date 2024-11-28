@@ -19,7 +19,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
+import android.view.Menu;
 
 /**
  * <p>Activity permettant d'ajouter un post (classique ou MP)</p>
@@ -71,8 +71,8 @@ public class NewPostActivity extends NewPostGenericActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		getSupportMenuInflater().inflate(R.menu.common, menu);
-		getSupportMenuInflater().inflate(R.menu.misc, menu);
+		getMenuInflater().inflate(R.menu.common, menu);
+		getMenuInflater().inflate(R.menu.misc, menu);
 		menu.removeItem(R.id.MenuRefresh);
 		return true;
 	}
@@ -80,7 +80,7 @@ public class NewPostActivity extends NewPostGenericActivity
 	@Override
 	protected void setTitle()
 	{
-		getSupportActionBar().setTitle(topic.getName());
+		getActionBar().setTitle(topic.getName());
 	}
 		
 	@Override

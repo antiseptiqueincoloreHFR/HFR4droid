@@ -21,7 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
+import android.view.Menu;
 
 /**
  * <p>Activity permettant d'ajouter un topic (classique ou MP)</p>
@@ -93,8 +93,8 @@ public class NewTopicActivity extends NewPostGenericActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		getSupportMenuInflater().inflate(R.menu.common, menu);
-		getSupportMenuInflater().inflate(R.menu.misc, menu);
+		getMenuInflater().inflate(R.menu.common, menu);
+		getMenuInflater().inflate(R.menu.misc, menu);
 		menu.removeItem(R.id.MenuMps);
 		menu.removeItem(R.id.MenuRefresh);
 		return true;
@@ -103,7 +103,7 @@ public class NewTopicActivity extends NewPostGenericActivity
 	@Override
 	protected void setTitle()
 	{
-		getSupportActionBar().setTitle(isMpsCat(cat) ? getString(R.string.new_mp) : cat.getName());
+		getActionBar().setTitle(isMpsCat(cat) ? getString(R.string.new_mp) : cat.getName());
 	}
 		
 	@Override

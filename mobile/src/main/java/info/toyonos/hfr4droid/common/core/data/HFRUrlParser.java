@@ -20,7 +20,7 @@ import android.os.StrictMode;
  */
 public class HFRUrlParser implements MDUrlParser
 {
-	public static final String BASE_URL_REGEXP	= "http://forum\\.hardware\\.fr/";
+	public static final String BASE_URL_REGEXP	= "https://forum\\.hardware\\.fr/";
 	public static final String POST_REGEXP		= "(?:(?:#t?([0-9]+))|(?:#(bas)))?$";
 	
 	private MDDataRetriever dataRetriever;
@@ -145,7 +145,7 @@ public class HFRUrlParser implements MDUrlParser
 			type = TopicType.fromInt(Integer.parseInt(HFRDataRetriever.getSingleElement("(?:&|\\?)owntopic=([0-9])", url)));
 			return true;		
 		}
-		else if (url.matches("http://forum\\.hardware\\.fr/forum1.*"))
+		else if (url.matches("https://forum\\.hardware\\.fr/forum1.*"))
 		{
 			// C'est une liste de topics pour une cat
 			element = getCat(url);

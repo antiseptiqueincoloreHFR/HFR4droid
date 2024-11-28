@@ -24,18 +24,18 @@
      		<TextView
 				android:id="@+id/ProfilePseudo"
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" 
+				android:layout_height="wrap_content"
 			    android:padding="0dip" />
      		<TextView
 				android:id="@+id/ProfileType"
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" 
-			    android:padding="0dip" />	
+				android:layout_height="wrap_content"
+			    android:padding="0dip" />
      		<TextView
 				android:id="@+id/ProfileSexAndAge"
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" 
-			    android:padding="0dip" />	
+				android:layout_height="wrap_content"
+			    android:padding="0dip" />
     	</LinearLayout>
     </LinearLayout>
 	<TextView

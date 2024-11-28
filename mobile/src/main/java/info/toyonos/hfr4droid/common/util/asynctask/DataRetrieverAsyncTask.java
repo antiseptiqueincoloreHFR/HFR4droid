@@ -45,7 +45,7 @@ public abstract class DataRetrieverAsyncTask<E, P> extends ProgressDialogAsyncTa
 
 	public void execute(int pageNumber, P... params)
 	{
-		execute(null, null, null, true, pageNumber, false, params);
+		execute(null, null, "", true, pageNumber, false, params);
 	}
 
 	public void execute(String progressTitle, String progressContent, String noElementMsg, boolean sameActivity, int pageNumber, P... params)

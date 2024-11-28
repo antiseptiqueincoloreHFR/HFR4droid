@@ -141,7 +141,7 @@ public class MpNotifyService extends Service
 				}
 
 				Notification notification = new Notification(R.drawable.icon, notificationMessage, System.currentTimeMillis());
-				notification.setLatestEventInfo(MpNotifyService.this, getString(R.string.app_name), notificationMessage, pendingIntent);
+				//notification.setLatestEventInfo(MpNotifyService.this, getString(R.string.app_name), notificationMessage, pendingIntent);
 				notification.vibrate = new long[] { 0, 250, 200, 250};
 				notification.ledOnMS = 100;
 				notification.ledOffMS = 100;

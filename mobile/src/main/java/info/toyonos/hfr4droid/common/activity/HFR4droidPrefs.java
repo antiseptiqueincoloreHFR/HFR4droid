@@ -117,6 +117,7 @@ public class HFR4droidPrefs extends PreferenceActivity
 		{
 			public boolean onPreferenceChange(Preference preference, Object newValue)
 			{
+
 				int oldFreq = Integer.parseInt(preferenceScreen.getSharedPreferences().getString(
 						HFR4droidApplication.PREF_SRV_MPS_FREQ,
 						getString(R.string.pref_srv_mps_freq_default)));

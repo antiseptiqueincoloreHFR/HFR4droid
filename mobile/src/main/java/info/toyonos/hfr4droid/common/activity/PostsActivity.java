@@ -120,9 +120,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.SubMenu;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import com.naholyr.android.ui.HFR4droidQuickActionWindow;
 import com.naholyr.android.ui.QuickActionWindow;
 import com.naholyr.android.ui.QuickActionWindow.Item;
@@ -411,7 +411,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                     }, 500);
                 }
 
-                supportInvalidateOptionsMenu();
+                invalidateOptionsMenu();
                 setTitle();
             }
 
@@ -570,10 +570,10 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        getSupportMenuInflater().inflate(R.menu.posts, menu);
-        getSupportMenuInflater().inflate(R.menu.nav, menu);
-        getSupportMenuInflater().inflate(R.menu.misc, menu);
-        getSupportMenuInflater().inflate(R.menu.common, menu);
+        getMenuInflater().inflate(R.menu.posts, menu);
+        getMenuInflater().inflate(R.menu.nav, menu);
+        getMenuInflater().inflate(R.menu.misc, menu);
+        getMenuInflater().inflate(R.menu.common, menu);
         return true;
     }
 
@@ -666,7 +666,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
     @Override
     protected void setTitle()
     {
-        final TextView topicTitle = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.TopicTitle);
+        final TextView topicTitle = (TextView) getActionBar().getCustomView().findViewById(R.id.TopicTitle);
         String topicName = topic.toString();
         if (topicName == null) topicName = "";
         int index =  topicName.indexOf(']');
@@ -676,7 +676,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
         }
         topicTitle.setText(topicName);
         topicTitle.setSelected(true);
-        final TextView topicPageNumber = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.TopicPageNumber);
+        final TextView topicPageNumber = (TextView) getActionBar().getCustomView().findViewById(R.id.TopicPageNumber);
         topicPageNumber.setText((topic.getNbPages() != -1 ? "P." + currentPageNumber + "/" + topic.getNbPages() + " " : ""));
     }
 
@@ -886,12 +886,12 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
             	Log.v(HFR4droidApplication.TAG, "l " + l + ", t " + t + ", oldl " + oldl + ", oldt " + oldt);
             	/*if (t == 0 && !actionBarVisible)
             	{
-            		PostsActivity.this.getSupportActionBar().show();
+            		PostsActivity.this.getActionBar().show();
             		actionBarVisible = true;
             	}
             	else if (t > 0 && actionBarVisible)
             	{
-            		PostsActivity.this.getSupportActionBar().hide();
+            		PostsActivity.this.getActionBar().hide();
             		actionBarVisible = false;
             	}
             }*/
@@ -917,7 +917,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                 if (result.getType() == HitTestResult.IMAGE_TYPE || result.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE)
                 {
                     final String url = result.getExtra();
-                    if (url.indexOf("http://forum-images.hardware.fr") != -1) return;
+                    if (url.indexOf("https://forum-images.hardware.fr") != -1) return;
 
                     android.view.MenuItem.OnMenuItemClickListener handler = new android.view.MenuItem.OnMenuItemClickListener()
                     {
@@ -1270,8 +1270,8 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                             View spp = findViewById(R.id.SearchPostsPanel);
                             View anchor = spp.getVisibility() == View.VISIBLE ? spp : findViewById(R.id.Anchor);
 
-                            getSupportActionBar().getCustomView().measure(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                            int actionBarHeight = getSupportActionBar().getCustomView().getMeasuredHeight();
+                            getActionBar().getCustomView().measure(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            int actionBarHeight = getActionBar().getCustomView().getMeasuredHeight();
 
                             currentQAwindow.show(anchor, Math.round(yOffset * webView.getScale()), actionBarHeight);
                         }
@@ -1363,10 +1363,11 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                         TextView location = (TextView) profileView.findViewById(R.id.ProfileLocation);
                         String city = profile.getCity() != null ? profile.getCity() : getString(R.string.profile_default_location);
                         String locationStr = "";
+                        /*
                         for (int i = 0; i < (profile.getLocation().length < 2 ? profile.getLocation().length : 2); i++)
                         {
                             locationStr += i != 0 ? ", " + profile.getLocation()[i] : profile.getLocation()[i];
-                        }
+                        }*/
                         location.setText(city + " (" + locationStr + ")");
                         location.setTextColor(currentTheme.getProfileText2Color());
                         location.setTextSize(getTextSize(10));
@@ -1397,7 +1398,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                         if (profile.getSmileysUrls().length > 0)
                         {
                             //final WebView smileysWebView = new WebView(PostsActivity.this);
-                            final WebView smileysWebView = new NonLeakingWebView(PostsActivity.this);
+                            final WebView smileysWebView = new WebView(PostsActivity.this);
 
                             int maxWidth = display.getWidth() / 5 * 4;
                             // Smiley 70px + (2 * 5px de margin) + 10 en plus , avec mise à l'échelle * nb de smileys
@@ -1523,7 +1524,6 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                                     pw.setOnDismissListener(null);
                                     profileTask = null;
                                     pw.dismiss();
-
                                     if (profile != null)
                                     {
                                         displayProfile(pw, profile);
@@ -1830,9 +1830,9 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
             content += "</div>";
             content = content.replaceAll("onload=\"md_verif_size\\(this,'Cliquez pour agrandir','[0-9]+','[0-9]+'\\)\"", "onclick=\"return true;\"");
             content = content.replaceAll("<b\\s*class=\"s1\"><a href=\"(.*?)\".*?>(.*?)</a></b>", "<b onclick=\"window.HFR4Droid.handleUrl('" + getDataRetriever().getBaseUrl() + "$1');\" class=\"s1\">$2</b>");
-            content = content.replaceAll("<a\\s*href=\"(http://forum\\.hardware\\.fr.*?)\"\\s*target=\"_blank\"\\s*class=\"cLink\">", "<a onclick=\"window.HFR4Droid.handleUrl('$1');\" class=\"cLink\">");
-            if (!isSmileysEnable) content = content.replaceAll("<img\\s*src=\"http://forum\\-images\\.hardware\\.fr.*?\"\\s*alt=\"(.*?)\".*?/>", "$1");
-            content = content.replaceAll("<img\\s*src=\"http://forum\\-images\\.hardware\\.fr/images/perso/(.*?)\"\\s*alt=\"(.*?)\"", "<img onclick=\"window.HFR4Droid.editKeywords('$2');\" src=\"http://forum-images.hardware.fr/images/perso/$1\" alt=\"$2\"");
+            content = content.replaceAll("<a\\s*href=\"(https://forum\\.hardware\\.fr.*?)\"\\s*target=\"_blank\"\\s*class=\"cLink\">", "<a onclick=\"window.HFR4Droid.handleUrl('$1');\" class=\"cLink\">");
+            if (!isSmileysEnable) content = content.replaceAll("<img\\s*src=\"https://forum\\-images\\.hardware\\.fr.*?\"\\s*alt=\"(.*?)\".*?/>", "$1");
+            content = content.replaceAll("<img\\s*src=\"https://forum\\-images\\.hardware\\.fr/images/perso/(.*?)\"\\s*alt=\"(.*?)\"", "<img onclick=\"window.HFR4Droid.editKeywords('$2');\" src=\"https://forum-images.hardware.fr/images/perso/$1\" alt=\"$2\"");
             if (!isImgsEnable) content = content.replaceAll("<img\\s*src=\"https?://[^\"]*?\"\\s*alt=\"https?://[^\"]*?\"\\s*title=\"(https?://.*?)\".*?/>", "<a href=\"$1\" target=\"_blank\" class=\"cLink\">$1</a>");
             content = content.replaceAll("ondblclick=\".*?\"", "");
             if (p.isDeleted()) postsContent.append("<div class=\"deleted_post\">");
@@ -1905,14 +1905,15 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
         if (!preloading) setView(webView);
         String meta = "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no\">";
         webView.loadDataWithBaseURL(getDataRetriever().getBaseUrl(), "<html><head>" + meta + js.toString() + css.toString() + js2.toString() + "</head><body>" + postsContent.toString() + "</body></html>", "text/html", "UTF-8", null);
-        supportInvalidateOptionsMenu();
+        invalidateOptionsMenu();
 
         // L'accélération matérielle est active par défaut sous Kitkat, ce qui provoque (pour une raison
         // encore inexpliquée des crashs au bout de quelques minutes avec le message "Could not lock surface...")
         // Comme "fix" (plutôt contournement, on désactive manuellement cette accélération matérielle pour KitKat)
+        /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
+        }*/
 
         return webView;
     }
@@ -2617,13 +2618,13 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
     @Override
     protected void customizeActionBar()
     {
-        getSupportActionBar().setDisplayShowHomeEnabled(false);
-        getSupportActionBar().setDisplayShowCustomEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getActionBar().setDisplayShowHomeEnabled(false);
+        getActionBar().setDisplayShowCustomEnabled(true);
+        getActionBar().setDisplayShowTitleEnabled(false);
 
         LayoutInflater inflator = (LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflator.inflate(R.layout.posts_title, null);
-        getSupportActionBar().setCustomView(v);
+        getActionBar().setCustomView(v);
 
         final TextView topicTitle = (TextView) v.findViewById(R.id.TopicTitle);
         topicTitle.setOnClickListener(new OnClickListener()

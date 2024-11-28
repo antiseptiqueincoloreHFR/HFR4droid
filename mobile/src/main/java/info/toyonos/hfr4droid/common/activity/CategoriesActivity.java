@@ -45,8 +45,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
+import android.view.Menu;
+import android.view.MenuItem;
+
 
 /**
  * <p>Activity listant les catégories</p>
@@ -70,7 +71,6 @@ public class CategoriesActivity extends HFR4droidListActivity<Category>
 		applyTheme(currentTheme);
 		infoDialog = getInfoDialog();
 		isCatsLoaded = true;
-
 		List<Category> cats  = new ArrayList<Category>();
 		Bundle bundle = this.getIntent().getExtras();
 		if (bundle != null && bundle.getSerializable("topics") != null)
@@ -312,8 +312,8 @@ public class CategoriesActivity extends HFR4droidListActivity<Category>
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		getSupportMenuInflater().inflate(R.menu.categories, menu);
-		getSupportMenuInflater().inflate(R.menu.common, menu);
+		getMenuInflater().inflate(R.menu.categories, menu);
+		getMenuInflater().inflate(R.menu.common, menu);
 		return true;
 	}
 
@@ -377,8 +377,9 @@ public class CategoriesActivity extends HFR4droidListActivity<Category>
 
 		AlertDialog infoDialog = info.create();
 		// Sorte de pre-rendering pour éviter l'affichage en 2 temps
+		/*
 		infoDialog.show();
-		infoDialog.hide();
+		infoDialog.hide();*/
 		return infoDialog;
 	}
 
@@ -387,11 +388,11 @@ public class CategoriesActivity extends HFR4droidListActivity<Category>
 	{
 		if (isLoggedIn())
 		{
-			getSupportActionBar().setTitle(getString(R.string.welcome_message, getHFR4droidApplication().getAuthentication().getUser()));
+			getActionBar().setTitle(getString(R.string.welcome_message, getHFR4droidApplication().getAuthentication().getUser()));
 		}
 		else
 		{
-			getSupportActionBar().setTitle(R.string.app_name);
+			getActionBar().setTitle(R.string.app_name);
 		}
 	}
 

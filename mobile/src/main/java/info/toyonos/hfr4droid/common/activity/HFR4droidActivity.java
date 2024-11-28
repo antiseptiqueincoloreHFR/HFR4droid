@@ -49,9 +49,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
+import android.view.Menu;
+import android.view.MenuItem;
 import com.markupartist.android.widget.PullToRefreshListView;
 
 
@@ -67,7 +66,7 @@ import com.markupartist.android.widget.PullToRefreshListView;
  * @author ToYonos
  *
  */
-public abstract class HFR4droidActivity extends SherlockActivity
+public abstract class HFR4droidActivity extends Activity
 {	
 	protected static boolean keepNavigationHistory = false;
 	
@@ -176,20 +175,17 @@ public abstract class HFR4droidActivity extends SherlockActivity
 	{
 		super.onRestart();
 		boolean redrawPage = false;
-		
 		if (currentTheme.getKey() != getThemeKey())
 		{
 			loadTheme(getThemeKey());
 			applyTheme(currentTheme);
 			redrawPage = true;
 		}
-		
 		if (currentPoliceSize != getPoliceSize())
 		{
 			currentPoliceSize = getPoliceSize();
 			redrawPage = true;
 		}
-		
 		if (this instanceof TopicsActivity)
 		{
 			TopicsActivity ta = (TopicsActivity) this;
@@ -230,7 +226,6 @@ public abstract class HFR4droidActivity extends SherlockActivity
 				mla.getSpace().setSwipeSensibility(getSwipe());
 			}
 		}
-		
 		if (redrawPage) redrawPage();
 	}
 
@@ -369,10 +364,10 @@ public abstract class HFR4droidActivity extends SherlockActivity
 
 	protected void customizeActionBar()
 	{
-		getSupportActionBar().setDisplayShowHomeEnabled(false);
+		getActionBar().setDisplayShowHomeEnabled(false);
 
 		int titleId = Resources.getSystem().getIdentifier("action_bar_title", "id", "android");
-		if(titleId == 0) titleId = R.id.abs__action_bar_title;
+		if(titleId == 0) titleId = R.id.action_bar_title;
 
 		final TextView appName = (TextView) findViewById(titleId);
 		//Typeface face = Typeface.createFromAsset(getAssets(), "take_out_the_garbage.ttf");

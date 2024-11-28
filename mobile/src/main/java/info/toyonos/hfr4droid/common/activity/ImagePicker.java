@@ -61,7 +61,7 @@ public class ImagePicker extends Activity implements Runnable{
 	public static final String ACTION_HFRUPLOADER_MP = "ACTION_HFRUPLOADER_MP";
 	
 	public static final String FINAL_URL = "finalUrl";
-	private static final String UPLOAD_URL = "http://reho.st/upload";
+	private static final String UPLOAD_URL = "https://reho.st/upload";
 	
 	// Pour le thread : en entrée :
 	String fichierLocal = null;
@@ -304,7 +304,7 @@ public class ImagePicker extends Activity implements Runnable{
 
 			httpClient.getParams().setParameter("http.socket.timeout", new Integer(90000)); // 90 second
 			post = new HttpPost(new URI(UPLOAD_URL));
-			post.setHeader("User-Agent", "Mozilla /4.0 (compatible; MSIE 6.0; Windows CE; IEMobile 7.6) Vodafone/1.0/SFR_v1615/1.56.163.8.39");
+			post.setHeader("User-Agent", HFR4droidApplication.getUserAgent());
 			
 			MultipartEntity multipart = new MultipartEntity();
 		    ContentBody cbFile = new FileBody(fileToUpload, "image/jpeg");
@@ -350,7 +350,7 @@ public class ImagePicker extends Activity implements Runnable{
 	 * @return
 	 */
 	private String getUrl(String line) {
-		Pattern p = Pattern.compile("<code>\\[img\\]http://reho.st/preview/self/.*</code>");
+		Pattern p = Pattern.compile("<code>\\[img\\]https://reho.st/preview/self/.*</code>");
 		Matcher m = p.matcher(line);
 		String match = null;
 		if(m.matches()) {

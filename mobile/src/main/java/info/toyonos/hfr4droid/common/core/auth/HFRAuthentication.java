@@ -55,7 +55,7 @@ public class HFRAuthentication
 	private boolean persistInformation;
 
 
-	public static final String AUTH_FORM_URL = "http://forum.hardware.fr/login_validation.php?config=hfr.inc";
+	public static final String AUTH_FORM_URL = "https://forum.hardware.fr/login_validation.php?config=hfr.inc";
 	public static final String OLD_COOKIES_FILE_NAME = "/sdcard/hfr_cookies.dat";
 	public static final String COOKIES_FILE_NAME = "hfr_cookies.dat";
 

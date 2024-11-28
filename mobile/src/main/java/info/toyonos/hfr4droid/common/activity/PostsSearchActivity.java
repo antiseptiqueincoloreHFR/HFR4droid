@@ -1,5 +1,6 @@
 package info.toyonos.hfr4droid.common.activity;
 
+import info.toyonos.hfr4droid.common.HFR4droidApplication;
 import info.toyonos.hfr4droid.common.R;
 import info.toyonos.hfr4droid.common.core.bean.Post;
 import info.toyonos.hfr4droid.common.core.bean.PostFromSearch;
@@ -20,9 +21,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.SubMenu;
+import android.view.Menu;
+import android.view.MenuItem;
+
+import android.view.SubMenu;
 import com.naholyr.android.ui.HFR4droidQuickActionWindow;
 import com.naholyr.android.ui.QuickActionWindow;
 import com.naholyr.android.ui.QuickActionWindow.Item;

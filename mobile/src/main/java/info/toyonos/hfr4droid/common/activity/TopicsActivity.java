@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,6 +31,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils.TruncateAt;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.GestureDetector;
@@ -51,9 +53,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.SubMenu;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import com.markupartist.android.widget.PullToRefreshListView;
 import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
@@ -155,7 +157,7 @@ public class TopicsActivity extends HFR4droidMultiListActivity<ArrayAdapter<Topi
 				}
 
 				setTitle();
-				supportInvalidateOptionsMenu();
+				invalidateOptionsMenu();
 			}
 
 			public void onFailForward()
@@ -426,11 +428,11 @@ public class TopicsActivity extends HFR4droidMultiListActivity<ArrayAdapter<Topi
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		getSupportMenuInflater().inflate(R.menu.topics, menu);
-		getSupportMenuInflater().inflate(R.menu.drapeaux, menu);
-		getSupportMenuInflater().inflate(R.menu.nav, menu);
-		getSupportMenuInflater().inflate(R.menu.misc, menu);
-		getSupportMenuInflater().inflate(R.menu.common, menu);
+		getMenuInflater().inflate(R.menu.topics, menu);
+		getMenuInflater().inflate(R.menu.drapeaux, menu);
+		getMenuInflater().inflate(R.menu.nav, menu);
+		getMenuInflater().inflate(R.menu.misc, menu);
+		getMenuInflater().inflate(R.menu.common, menu);
 		SubMenu menuNav = menu.findItem(R.id.MenuNav).getSubMenu();
 		menuNav.removeItem(R.id.MenuNavLastPage);
 
@@ -534,7 +536,7 @@ public class TopicsActivity extends HFR4droidMultiListActivity<ArrayAdapter<Topi
 			}
 			else if (item.getItemId() == R.id.MenuNavSubCats)
 			{
-				openContextMenu(getSupportActionBar().getCustomView().findViewById(R.id.CatTitle));
+				openContextMenu(getActionBar().getCustomView().findViewById(R.id.CatTitle));
 				return true;
 			}
 			else
@@ -591,7 +593,7 @@ public class TopicsActivity extends HFR4droidMultiListActivity<ArrayAdapter<Topi
 	@Override
 	protected void setTitle()
 	{
-		TextView catTitle = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.CatTitle);
+		TextView catTitle = (TextView) getActionBar().getCustomView().findViewById(R.id.CatTitle);
 		catTitle.setTextSize(getTextSize(15));
 		String title;
 		if (isMpsCat() && getDatasource() != null && getDatasource().getCount() > 0)
@@ -631,7 +633,7 @@ public class TopicsActivity extends HFR4droidMultiListActivity<ArrayAdapter<Topi
 		catTitle.setText(title);
 		catTitle.setSelected(true);
 		
-		getSupportActionBar().setTitle(title);
+		getActionBar().setTitle(title);
 	}
 	
 	@Override
@@ -644,20 +646,20 @@ public class TopicsActivity extends HFR4droidMultiListActivity<ArrayAdapter<Topi
 	@Override
 	protected void customizeActionBar()
 	{
-		getSupportActionBar().setDisplayShowHomeEnabled(false);
-		getSupportActionBar().setDisplayShowCustomEnabled(true);
-		getSupportActionBar().setDisplayShowTitleEnabled(false);
+		getActionBar().setDisplayShowHomeEnabled(false);
+		getActionBar().setDisplayShowCustomEnabled(true);
+		getActionBar().setDisplayShowTitleEnabled(false);
 
 		LayoutInflater inflator = (LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View v = inflator.inflate(R.layout.topics_title, null);
-		getSupportActionBar().setCustomView(v);
+		getActionBar().setCustomView(v);
 		
 		attachEvents();
 	}
 	
 	private void attachEvents()
 	{
-		final TextView catTitle = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.CatTitle);
+		final TextView catTitle = (TextView) getActionBar().getCustomView().findViewById(R.id.CatTitle);
 		registerForContextMenu(catTitle);
 
 		catTitle.setOnCreateContextMenuListener(new OnCreateContextMenuListener()
@@ -860,7 +862,7 @@ public class TopicsActivity extends HFR4droidMultiListActivity<ArrayAdapter<Topi
 				getDatasource().add(t);
 			}
 			getDatasource().notifyDataSetChanged();
-			supportInvalidateOptionsMenu();
+			invalidateOptionsMenu();
 			if (getListView() != null) getListView().setSelection(0);
 		}
 	}
@@ -1043,7 +1045,7 @@ public class TopicsActivity extends HFR4droidMultiListActivity<ArrayAdapter<Topi
 					lastPostInfos.setTextSize(getTextSize(11));
 					pagesInfos.setTextSize(getTextSize(11));
 					SimpleDateFormat todaySdf = new SimpleDateFormat("HH:mm");
-					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy é HH:mm");
+					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy à HH:mm");
 					lastPostInfos.setText(getString(R.string.last_post_infos, formatDate(todaySdf, sdf, t.getLastPostDate()), t.getLastPostPseudo()));
 					if (t.getLastReadPage() != -1)
 					{

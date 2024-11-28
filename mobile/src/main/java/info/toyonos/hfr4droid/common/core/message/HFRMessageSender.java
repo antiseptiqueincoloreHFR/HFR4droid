@@ -24,15 +24,15 @@ import org.apache.http.message.BasicNameValuePair;
 
 public class HFRMessageSender
 {	 
-	private static final String FORM_URI = "http://forum.hardware.fr/bddpost.php?config=hfr.inc";
-	private static final String FORM_EDIT_URI = "http://forum.hardware.fr/bdd.php?config=hfr.inc";
-	private static final String FORM_EDIT_KEYWORDS_URI = "http://forum.hardware.fr/wikismilies.php?config=hfr.inc&option_wiki=0&withouttag=0";
-	private static final String FAVORITE_URI = "http://forum.hardware.fr/user/addflag.php?config=hfr.inc&cat={$cat}&post={$topic}&numreponse={$post}";
-	private static final String UNREAD_URI = "http://forum.hardware.fr/user/nonlu.php?config=hfr.inc&cat={$cat}&post={$topic}";
-	private static final String UNFLAG_URI = "http://forum.hardware.fr/modo/manageaction.php?config=hfr.inc&cat={$cat}&type_page=forum1&moderation=0";
-	private static final String DELETE_MP_URI = "http://forum.hardware.fr/modo/manageaction.php?config=hfr.inc&cat={$cat}&type_page=forum1&moderation=0";
-	private static final String AQ_URI = "http://alerte-qualitay.toyonos.info/api/addAlerte.php5";
-	private static final String MODO_URI = "http://forum.hardware.fr/user/modo.php?config=hfr.inc&cat={$cat}&post={$topic}&numreponse={$post}";
+	private static final String FORM_URI = "https://forum.hardware.fr/bddpost.php?config=hfr.inc";
+	private static final String FORM_EDIT_URI = "https://forum.hardware.fr/bdd.php?config=hfr.inc";
+	private static final String FORM_EDIT_KEYWORDS_URI = "https://forum.hardware.fr/wikismilies.php?config=hfr.inc&option_wiki=0&withouttag=0";
+	private static final String FAVORITE_URI = "https://forum.hardware.fr/user/addflag.php?config=hfr.inc&cat={$cat}&post={$topic}&numreponse={$post}";
+	private static final String UNREAD_URI = "https://forum.hardware.fr/user/nonlu.php?config=hfr.inc&cat={$cat}&post={$topic}";
+	private static final String UNFLAG_URI = "https://forum.hardware.fr/modo/manageaction.php?config=hfr.inc&cat={$cat}&type_page=forum1&moderation=0";
+	private static final String DELETE_MP_URI = "https://forum.hardware.fr/modo/manageaction.php?config=hfr.inc&cat={$cat}&type_page=forum1&moderation=0";
+	private static final String AQ_URI = "https://alerte-qualitay.toyonos.info/api/addAlerte.php5";
+	private static final String MODO_URI = "https://forum.hardware.fr/user/modo.php?config=hfr.inc&cat={$cat}&post={$topic}&numreponse={$post}";
 
 	/**
 	 * Les codes des réponses

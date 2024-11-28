@@ -35,8 +35,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
+import android.view.Menu;
+import android.view.MenuItem;
 
 public class CategoriesActivity extends	info.toyonos.hfr4droid.common.activity.CategoriesActivity
 {
@@ -118,7 +118,7 @@ public class CategoriesActivity extends	info.toyonos.hfr4droid.common.activity.C
 		})
 		.create();
 
-		getSupportActionBar().setDisplayHomeAsUpEnabled(isLoggedIn());
+		getActionBar().setDisplayHomeAsUpEnabled(isLoggedIn());
 
 		if (isLoggedIn() && !getHFR4droidApplication().isBirthdayOk())
 		{
@@ -184,14 +184,14 @@ public class CategoriesActivity extends	info.toyonos.hfr4droid.common.activity.C
 		{
 			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 			String title = settings.getString(PREF_WELCOME_MESSAGE, null);
-			getSupportActionBar().setTitle(
+			getActionBar().setTitle(
 				title == null ?
 					getString(R.string.welcome_message, getHFR4droidApplication().getAuthentication().getUser()) :
 					title.replace(PSEUDO_TOKEN, getHFR4droidApplication().getAuthentication().getUser()));
 		}
 		else
 		{
-			getSupportActionBar().setTitle(R.string.app_name);
+			getActionBar().setTitle(R.string.app_name);
 		}
 	}
 	
@@ -243,7 +243,7 @@ public class CategoriesActivity extends	info.toyonos.hfr4droid.common.activity.C
 	protected void reloadPage()
 	{
 		super.reloadPage();
-		getSupportActionBar().setDisplayHomeAsUpEnabled(isLoggedIn());
+		getActionBar().setDisplayHomeAsUpEnabled(isLoggedIn());
 	}
 
 	private void hideKeyboard(EditText prompt)
@@ -329,14 +329,14 @@ public class CategoriesActivity extends	info.toyonos.hfr4droid.common.activity.C
 			case PASSWD:
 				hideKeyboard(prompt);
 				promptDialog.dismiss();
-				intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://forum.hardware.fr/user/passwordchange.php?config=hfr.inc"));
+				intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://forum.hardware.fr/user/passwordchange.php?config=hfr.inc"));
 				startActivity(intent);
 				break;
 				
 			case MAN:
 				hideKeyboard(prompt);
 				promptDialog.dismiss();
-				intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://code.google.com/p/hfr4droid/wiki/Documentation"));
+				intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://code.google.com/p/hfr4droid/wiki/Documentation"));
 				startActivity(intent);
 				break;
 				
