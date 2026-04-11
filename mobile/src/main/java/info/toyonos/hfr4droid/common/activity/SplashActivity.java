@@ -16,7 +16,6 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -150,8 +149,7 @@ public class SplashActivity extends HFR4droidActivity
 
 	protected void updateLogo()
 	{
-		Display display = getWindowManager().getDefaultDisplay();
-		boolean landscape = display.getWidth() > display.getHeight();
+		boolean landscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
 		SimpleDateFormat sdf = new SimpleDateFormat("MM");
 		boolean december = sdf.format(new Date()).equals("12");
 		

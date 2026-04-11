@@ -12,7 +12,10 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.os.Build;
 import android.view.Window;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -166,13 +169,34 @@ public class HFR4droidPrefs extends PreferenceActivity
 	{
 		if (fullscreen)
 		{
-			getWindow().setFlags(
-							WindowManager.LayoutParams.FLAG_FULLSCREEN,   
-							WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+			{
+				WindowInsetsController controller = getWindow().getInsetsController();
+				if (controller != null)
+				{
+					controller.hide(WindowInsets.Type.statusBars());
+					controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+				}
+			}
+			else
+			{
+				getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			}
 		}
 		else
 		{
-			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+			{
+				WindowInsetsController controller = getWindow().getInsetsController();
+				if (controller != null)
+				{
+					controller.show(WindowInsets.Type.statusBars());
+				}
+			}
+			else
+			{
+				getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			}
 		}
 	}
 }

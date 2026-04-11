@@ -532,6 +532,24 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
         searchPanel.setVisibility(View.GONE);
     }
 
+    private int getDisplayWidth()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+        {
+            return getWindowManager().getCurrentWindowMetrics().getBounds().width();
+        }
+        return getWindowManager().getDefaultDisplay().getWidth();
+    }
+
+    private int getDisplayHeight()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+        {
+            return getWindowManager().getCurrentWindowMetrics().getBounds().height();
+        }
+        return getWindowManager().getDefaultDisplay().getHeight();
+    }
+
     @Override
     public void onConfigurationChanged(Configuration conf)
     {
@@ -539,8 +557,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
         WebView webView = getWebView();
         if (webView != null)
         {
-            Display display = getWindowManager().getDefaultDisplay();
-            int width = Math.round(display.getWidth() / webView.getScale());
+            int width = Math.round(getDisplayWidth() / webView.getScale());
             webView.loadUrl("javascript:loadDynamicCss(" + width + ")");
         }
     }
@@ -1299,7 +1316,6 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
 
                     private void displayProfile(final PopupWindow pw, Profile profile)
                     {
-                        Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
                         final LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                         final LinearLayout profileView =  (LinearLayout) inflater.inflate(R.layout.profile_popup, null, false);
                         pw.setContentView(profileView);
@@ -1314,7 +1330,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                         if (profile.getAvatarUrl() != null && profile.getAvatarBitmap() != null)
                         {
                             avatar.setImageBitmap(profile.getAvatarBitmap());
-                            int newWidth = Math.min(display.getWidth(), display.getHeight()) / 4;
+                            int newWidth = Math.min(getDisplayWidth(), getDisplayHeight()) / 4;
                             int orgWidth = avatar.getDrawable().getIntrinsicWidth();
                             if (newWidth < orgWidth)
                             {
@@ -1400,7 +1416,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                             //final WebView smileysWebView = new WebView(PostsActivity.this);
                             final WebView smileysWebView = new WebView(PostsActivity.this);
 
-                            int maxWidth = display.getWidth() / 5 * 4;
+                            int maxWidth = getDisplayWidth() / 5 * 4;
                             // Smiley 70px + (2 * 5px de margin) + 10 en plus , avec mise à l'échelle * nb de smileys
                             int targetWidth = (int) (10 + (profile.getSmileysUrls().length * 80 * smileysWebView.getScale()));
                             Log.d(HFR4droidApplication.TAG, "max : " + maxWidth + " / calculated : " + targetWidth);
@@ -1776,8 +1792,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
         css.append("#top { visibility: hidden; top: 10px; background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA%2FwD%2FAP%2BgvaeTAAADoUlEQVRoge2YT0gjVxzHPxkjRjGKEYSFwp72spelp0CoYDwpnvQk4klcBVE8FA%2BC%2BOdUW715ExRUxIKC%2By8W1IMIIq6KB0ENKAVFI7ZgZWnVqPP20B0xu8nMm8lLjKUfeJDM%2B8173%2B9835tkxkUsL4HnQCFQQGbxN3AB%2FAF8BMTDTh8Q%2BnLwKbQt4MVDAwsZIMpuOwByAX7IADFOW5MGfM%2FT5ZUGeFI1usfjoaqqKlXDA%2BQB9JCCeL1er1heXhZCCNHZ2ZmqJfQrwE%2BqB87LyxMLCwvCQNd10dramgoDs8oNFBQUiJWVFRGPrq4u1QbeKDVQVFQk1tfX44o36O7uVm6gX8VgPp9PbGxsmIo36OnpUWXgrRIDxcXFYnNzU0q8QX9%2FvwoD75I2UFhYKFZXV22JN1CwJ5Iz4PP5xNbWliPxBgMDA8kYeA%2Fws5OTvV6v4yuv0MQHRwby8%2FMT3irTbMK%2BgdzcXLG4uKhUvMHg4KBdAyGAX2RP8Hg8Yn5%2BPiXiHZqYkzbgdrvF9PR0SsUb9Pb2qjWQlZUlJicnLSe%2BuLgQExMTpjUdHR1C13XLsfr6%2BmQM%2FCZloL293XLC8%2FNz4ff7RXNzs2mdpmmira1NyoTf77c0oAEuLCgpKTHtj0QiBAIB1tbWEEIkrBNCoOs6Q0NDNDY2ouu66bg5OTlW0lyaVQVAdnZ2wr6TkxPKy8vZ3d0FMBX1sG90dJT6%2Bnru7u5kJCRCzoDb7Y57%2FOzsjIqKCvb29u6PmSVwe3sb831qaoqWlhbLJMxwnEAkEqGsrIzt7e2Y42Zi4l3t4eFhmpqaHJuQMqBpsWXHx8cEg8H7ZfMQswQSiRwZGaGhoeEbgzKmpAzc3Nzcfz44OCAQCBAOh22JhPgJGIyNjVFbWxsz19dLLg7CloH9%2FX2CwSCHh4eJRzRJwGrDzszMUF1dzfX1tVQ9%2FJtA4hm%2FEI1G2dnZobS0lKOjI9NapwkYhEIhampquLq6kqmXSyAcDlNZWcnp6allbTIJGMzNzVFXV8fl5aVlbfz741eMj49LTQzyvwNWzM7OypTJJWCHZO7pTpDaA3ZIs4H0JmC2P5zy1JeQSOsS%2Bj%2BBb3nyeyC9SygV%2FCcSUEo0GlU9pCluQGnmS0tLuFyWj9mqEBpg%2FY8pc9E14J%2FHVpEEf2nAp8dWkQTnLuAZ8Dtg%2BRImAyk3PrwG7rD%2Fevsx2yjEvpUrBX4EvgO8SD7sKOQTYPkUD%2FwJTAETgP4ZmQ5UTPRxaekAAAAASUVORK5CYII%3D\"); }");
         css.append("</style>");
 
-        Display display = getWindowManager().getDefaultDisplay();
-        int width = Math.round(display.getWidth() / webView.getScale());
+        int width = Math.round(getDisplayWidth() / webView.getScale());
         StringBuffer js2 = new StringBuffer("<script type=\"text/javascript\">");
         js2.append("loadDynamicCss(" + width + ");");
         js2.append("</script>");
