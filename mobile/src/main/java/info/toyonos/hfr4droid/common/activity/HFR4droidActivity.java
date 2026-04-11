@@ -140,6 +140,11 @@ public abstract class HFR4droidActivity extends Activity
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
+		if (isDarkTheme(this))
+		{
+			getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(
+				getResources().getColor(R.color.dark_list_background)));
+		}
 		super.onCreate(savedInstanceState);
 
 		loadTheme(getThemeKey());
@@ -533,8 +538,8 @@ public abstract class HFR4droidActivity extends Activity
 			LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.login, null);
 
-			AlertDialog.Builder builder = new AlertDialog.Builder(HFR4droidActivity.this);
-			builder.setTitle(getString(R.string.login_title)); 
+			AlertDialog.Builder builder = getDialogBuilder(HFR4droidActivity.this);
+			builder.setTitle(getString(R.string.login_title));
 			builder.setView(layout);
 			final EditText user = (EditText) layout.findViewById(R.id.inputUser);
 			final EditText pass = (EditText) layout.findViewById(R.id.inputPass);
@@ -1092,12 +1097,24 @@ public abstract class HFR4droidActivity extends Activity
 	
 	public static AlertDialog getConfirmDialog(Activity context, String title, String message, DialogInterface.OnClickListener listenerOk, DialogInterface.OnClickListener listenerKo)
 	{
-		return new AlertDialog.Builder(context)
+		return getDialogBuilder(context)
 		.setTitle(title)
 		.setMessage(message)
 		.setPositiveButton(R.string.button_yes, listenerOk)
 		.setNegativeButton(R.string.button_no, listenerKo)
 		.create();
+	}
+
+	public static boolean isDarkTheme(Context context)
+	{
+		return "dark".equals(((HFR4droidApplication) context.getApplicationContext()).getThemeKey());
+	}
+
+	public static AlertDialog.Builder getDialogBuilder(Context context)
+	{
+		return isDarkTheme(context) ?
+			new AlertDialog.Builder(context, AlertDialog.THEME_HOLO_DARK) :
+			new AlertDialog.Builder(context);
 	}
 	
 	protected String formatDate(SimpleDateFormat todaySdf, SimpleDateFormat dateHeure, Date date)

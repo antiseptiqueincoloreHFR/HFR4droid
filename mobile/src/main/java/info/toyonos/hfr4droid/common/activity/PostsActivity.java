@@ -1190,7 +1190,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                                                     {
                                                         final StringBuilder message = new StringBuilder("");
                                                         for(String data : exifData) message.append(data + "\n");
-                                                        new AlertDialog.Builder(PostsActivity.this)
+                                                        getDialogBuilder(PostsActivity.this)
                                                                 .setTitle(R.string.exif_data)
                                                                 .setMessage(message)
                                                                 .setPositiveButton(R.string.button_copy_to_clip, new DialogInterface.OnClickListener()
@@ -1628,7 +1628,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
                         View layout = inflater.inflate(R.layout.keywords, null);
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(PostsActivity.this);
+                        AlertDialog.Builder builder = getDialogBuilder(PostsActivity.this);
                         builder.setTitle(getString(R.string.keywords_title, code));
                         builder.setView(layout);
                         final EditText keywordsView = (EditText) layout.findViewById(R.id.inputKeywords);
@@ -2106,7 +2106,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                             break;
                         }
                     }
-                    new AlertDialog.Builder(PostsActivity.this)
+                    getDialogBuilder(PostsActivity.this)
                             .setTitle(R.string.aq_list_title)
                             .setSingleChoiceItems(adapter, preselectedAlert, new DialogInterface.OnClickListener()
                             {
@@ -2119,7 +2119,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                                     final View layout = inflater.inflate(R.layout.alerte_qualitay, null);
                                     if (selectedAlert.getAlertQualitayId() != -1) layout.findViewById(R.id.AQ_name).setVisibility(View.GONE);
 
-                                    final AlertDialog d = new AlertDialog.Builder(PostsActivity.this)
+                                    final AlertDialog d = getDialogBuilder(PostsActivity.this)
                                             .setTitle(R.string.aq_new_title)
                                             .setView(layout)
                                             .setPositiveButton(R.string.aq_sent, new DialogInterface.OnClickListener()
@@ -2255,7 +2255,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                         {
                             public void onClick(DialogInterface arg0, int arg1)
                             {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(PostsActivity.this);
+                                AlertDialog.Builder builder = getDialogBuilder(PostsActivity.this);
                                 builder.setTitle(R.string.warm_modo_title);
                                 final EditText reason = new EditText(PostsActivity.this);
                                 reason.setHint(R.string.modo_reason_hint);

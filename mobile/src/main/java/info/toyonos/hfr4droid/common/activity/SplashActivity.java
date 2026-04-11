@@ -39,6 +39,10 @@ public class SplashActivity extends HFR4droidActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
+		if (isDarkTheme(this))
+		{
+			setTheme(R.style.SplashThemeDark);
+		}
 		super.onCreate(savedInstanceState);
 		getActionBar().hide();
 		setContentView(R.layout.splash);
@@ -109,7 +113,7 @@ public class SplashActivity extends HFR4droidActivity
 		{
 			public void run()
 			{
-				new AlertDialog.Builder(SplashActivity.this)
+				getDialogBuilder(SplashActivity.this)
 				.setTitle(R.string.error_splash_title)
 				.setMessage(getMessage(e, null))
 				.setOnCancelListener(new OnCancelListener()

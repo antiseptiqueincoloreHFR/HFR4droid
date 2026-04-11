@@ -361,10 +361,21 @@ public class CategoriesActivity extends HFR4droidListActivity<Category>
 			infoContent = getString(R.string.error_about);
 		}
 
-		AlertDialog.Builder info = new AlertDialog.Builder(this);
+		if (isDarkTheme(this))
+		{
+			String darkCss = "<style>body{background-color:#303030;color:#F7F7F7;}"
+				+ "a:link,a:visited,a:hover,a:active{color:#B0B0FF;}</style>";
+			infoContent = infoContent.replace("</head>", darkCss + "</head>");
+		}
+
+		AlertDialog.Builder info = getDialogBuilder(this);
 		info.setIcon(R.drawable.icon);
-		info.setTitle(title); 
+		info.setTitle(title);
 		WebView webView = new WebView(this);
+		if (isDarkTheme(this))
+		{
+			webView.setBackgroundColor(getResources().getColor(R.color.dark_list_background));
+		}
 		WebSettings settings = webView.getSettings();
 		settings.setDefaultTextEncodingName("UTF-8");
 		webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);

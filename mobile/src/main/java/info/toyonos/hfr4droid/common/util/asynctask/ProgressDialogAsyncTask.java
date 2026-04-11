@@ -1,6 +1,7 @@
 package info.toyonos.hfr4droid.common.util.asynctask;
 
 import info.toyonos.hfr4droid.common.activity.HFR4droidActivity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
@@ -18,9 +19,11 @@ public abstract class ProgressDialogAsyncTask<P, G, R> extends AsyncTask<P, G, R
 	}
 
 	@Override
-	protected void onPreExecute() 
+	protected void onPreExecute()
 	{
-		progressDialog = new ProgressDialog(context);
+		progressDialog = HFR4droidActivity.isDarkTheme(context) ?
+			new ProgressDialog(context, AlertDialog.THEME_HOLO_DARK) :
+			new ProgressDialog(context);
 		progressDialog.setIndeterminate(true);
 		progressDialog.setCanceledOnTouchOutside(false);
 		progressDialog.setOnCancelListener(new OnCancelListener()

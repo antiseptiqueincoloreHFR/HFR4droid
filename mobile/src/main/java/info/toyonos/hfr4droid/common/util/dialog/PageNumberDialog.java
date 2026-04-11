@@ -56,7 +56,7 @@ public abstract class PageNumberDialog
 	{
 		if (dialog == null)
 		{
-			AlertDialog.Builder builder = new AlertDialog.Builder(context);                 
+			AlertDialog.Builder builder = HFR4droidActivity.getDialogBuilder(context);
 			builder.setTitle(context.getString(R.string.nav_page_number));  
 			
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);

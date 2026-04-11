@@ -17,7 +17,7 @@
         android:name="info.toyonos.hfr4droid.common.HFR4droidApplication"
         android:hardwareAccelerated="true"
         android:theme="@style/AppTheme">
-        <activity android:name="info.toyonos.hfr4droid.common.activity.SplashActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize" android:exported="true">
+        <activity android:name="info.toyonos.hfr4droid.common.activity.SplashActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize" android:exported="true" android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

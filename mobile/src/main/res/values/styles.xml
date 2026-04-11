@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+	<style name="SplashTheme" parent="@style/AppTheme">
+		<item name="android:windowDisablePreview">true</item>
+		<item name="android:windowBackground">@color/default_list_background</item>
+	</style>
+
+	<style name="SplashThemeDark" parent="@android:style/Theme.Holo">
+		<item name="android:windowDisablePreview">true</item>
+		<item name="android:windowBackground">@color/dark_list_background</item>
+		<item name="android:actionButtonStyle">@style/MyActionButtonStyle</item>
+		<item name="android:actionBarStyle">@style/MyActionBarStyle</item>
+	</style>
+
 	<style name="Animation.QuickActionWindow" parent="@android:style/Animation">
 		<item name="android:windowEnterAnimation">@anim/quick_action_window_enter</item>
 		<item name="android:windowExitAnimation">@anim/quick_action_window_exit</item>

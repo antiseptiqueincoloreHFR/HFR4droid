@@ -161,7 +161,12 @@ public class ImagePicker extends Activity implements Runnable{
 							return;
 						}
 						
-						dialog = ProgressDialog.show(ImagePicker.this, "", getString(R.string.loading_hfr_rehost), true);
+						dialog = HFR4droidActivity.isDarkTheme(ImagePicker.this) ?
+							new ProgressDialog(ImagePicker.this, android.R.style.Theme_Holo_Dialog) :
+							new ProgressDialog(ImagePicker.this);
+						dialog.setMessage(getString(R.string.loading_hfr_rehost));
+						dialog.setIndeterminate(true);
+						dialog.show();
 						new Thread(ImagePicker.this).start();
 					}
 				}

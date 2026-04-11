@@ -28,6 +28,10 @@ public class HFR4droidPrefs extends PreferenceActivity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		if (HFR4droidActivity.isDarkTheme(this))
+		{
+			setTheme(android.R.style.Theme_Holo);
+		}
 		super.onCreate(savedInstanceState);
 		switchFullscreen(PreferenceManager.getDefaultSharedPreferences(this)
 											.getBoolean(HFR4droidApplication.PREF_FULLSCREEN_ENABLE,
@@ -60,7 +64,7 @@ public class HFR4droidPrefs extends PreferenceActivity
 				// Option only available for multicore processors
 				if (((HFR4droidApplication) getApplication()).isMonoCore())
 				{
-					new AlertDialog.Builder(HFR4droidPrefs.this)
+					HFR4droidActivity.getDialogBuilder(HFR4droidPrefs.this)
 					.setTitle(R.string.pref_disabled)
 					.setMessage(R.string.pref_override_light_mode_disabled)
 					.setPositiveButton(R.string.button_ok,  new DialogInterface.OnClickListener()
@@ -70,10 +74,10 @@ public class HFR4droidPrefs extends PreferenceActivity
 					.show();
 					return false;
 				}
-						
+
 				if ((Boolean) newValue)
 				{
-					new AlertDialog.Builder(HFR4droidPrefs.this)
+					HFR4droidActivity.getDialogBuilder(HFR4droidPrefs.this)
 					.setTitle(R.string.pref_warning)
 					.setMessage(R.string.pref_override_light_mode_message)
 					.setPositiveButton(R.string.button_ok,  new DialogInterface.OnClickListener()
