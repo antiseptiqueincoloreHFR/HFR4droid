@@ -91,6 +91,9 @@
     <string name="copy_hfr_rehost">Le BBCode de l\'image a été copié dans le presse-papier.</string>
     <string name="error_hfr_rehost">Erreur lors de la compression de l\'image : %s</string>
     <string name="error_upload_diberie">Erreur lors de l\'upload sur rehost.diberie.com</string>
+    <string name="choose_image_size_title">Taille de l\'image à insérer</string>
+    <string name="image_size_reduced">Image réduite</string>
+    <string name="image_size_thumbnail">Image miniature (vignette)</string>
     <string name="save_image">Sauvegarde de l\'image en cours…</string>
     <string name="save_image_ok">Image sauvegardée avec succès dans %s</string>
     <string name="save_image_failed">Impossible de sauvegarder cette image</string>

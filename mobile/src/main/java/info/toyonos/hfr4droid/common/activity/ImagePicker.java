@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -54,7 +55,8 @@ public class ImagePicker extends Activity implements Runnable {
 	// Pour le thread : en entrée :
 	Uri imageUri = null;
 	// et en sortie :
-	String url = null;
+	String uploadedPicUrl = null;
+	String uploadedResizedUrl = null;
 
 	// Dialog de progression
 	ProgressDialog dialog = null;
@@ -133,8 +135,8 @@ public class ImagePicker extends Activity implements Runnable {
 	 * Pour le thread
 	 */
 	public void run() {
-		url = doUpload(imageUri);
-		handler.sendEmptyMessage(url != null ? DATA_READ_OK : DATA_READ_KO);
+		boolean success = doUpload(imageUri);
+		handler.sendEmptyMessage(success ? DATA_READ_OK : DATA_READ_KO);
 	}
 
 	/**
@@ -146,28 +148,60 @@ public class ImagePicker extends Activity implements Runnable {
 			// On cache la fenetre de progression
 			dialog.dismiss();
 
-			// si upload ok
 			if (msg.what == DATA_READ_OK) {
-
-				// si appelé depuis l'appli, renvoi d'un intent avec l'url dans les extras
-				if (ACTION_TYPE.equals(ACTION_HFRUPLOADER) || ACTION_TYPE.equals(ACTION_HFRUPLOADER_MP)) {
-					getIntent().putExtra(FINAL_URL, url);
-					setResult(RESULT_OK, getIntent());
+				// Si pas d'URL redimensionnée, insertion directe de l'image originale
+				if (uploadedResizedUrl == null) {
+					sendResult("[img]" + uploadedPicUrl + "[/img]");
+					return;
 				}
-				// si appelé depuis le partage, on met l'url dans le presse papiers
-				if (ACTION_TYPE.equals(Intent.ACTION_SEND)) {
-					setClipboardText(url);
-					Toast.makeText(getApplicationContext(), getString(R.string.copy_hfr_rehost), Toast.LENGTH_LONG).show();
-				}
+				// Dialog de choix de la taille
+				new AlertDialog.Builder(ImagePicker.this)
+					.setTitle(R.string.choose_image_size_title)
+					.setItems(new String[]{
+						getString(R.string.image_size_reduced),
+						getString(R.string.image_size_thumbnail)
+					}, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface d, int which) {
+							String bbcode;
+							if (which == 0) {
+								// Image réduite
+								bbcode = "[url=" + uploadedPicUrl + "][img]" + uploadedResizedUrl + "[/img][/url]";
+							} else {
+								// Image miniature : Get/xxx → Get/t
+								String thumbUrl = uploadedResizedUrl.replaceFirst("Get/[^/?]+", "Get/t");
+								bbcode = "[url=" + uploadedPicUrl + "][img]" + thumbUrl + "[/img][/url]";
+							}
+							sendResult(bbcode);
+						}
+					})
+					.setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface d, int which) {
+							setResult(RESULT_CANCELED);
+							finish();
+						}
+					})
+					.setCancelable(false)
+					.show();
 			} else {
 				// erreur lors de l'upload
 				Toast.makeText(getApplicationContext(), getString(R.string.error_upload_diberie), Toast.LENGTH_LONG).show();
 				setResult(RESULT_CANCELED);
+				finish();
 			}
-			// on termine
-			finish();
 		}
 	};
+
+	private void sendResult(String bbcode) {
+		if (ACTION_TYPE.equals(ACTION_HFRUPLOADER) || ACTION_TYPE.equals(ACTION_HFRUPLOADER_MP)) {
+			getIntent().putExtra(FINAL_URL, bbcode);
+			setResult(RESULT_OK, getIntent());
+		}
+		if (ACTION_TYPE.equals(Intent.ACTION_SEND)) {
+			setClipboardText(bbcode);
+			Toast.makeText(getApplicationContext(), getString(R.string.copy_hfr_rehost), Toast.LENGTH_LONG).show();
+		}
+		finish();
+	}
 
 	private void setClipboardText(String text) {
 		ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
@@ -204,17 +238,18 @@ public class ImagePicker extends Activity implements Runnable {
 	}
 
 	/**
-	 * Upload de l'image sur rehost.diberie.com
+	 * Upload de l'image sur rehost.diberie.com.
+	 * Stocke les URLs résultantes dans uploadedPicUrl et uploadedResizedUrl.
 	 * @param uri URI de l'image sélectionnée
-	 * @return le BBCode à insérer, ou null en cas d'erreur
+	 * @return true si l'upload a réussi, false sinon
 	 */
-	public String doUpload(Uri uri) {
+	public boolean doUpload(Uri uri) {
 		try {
 			// Lecture des octets de l'image depuis l'URI
 			InputStream is = getContentResolver().openInputStream(uri);
 			if (is == null) {
 				Log.e(LOG_TAG, "Impossible d'ouvrir le flux pour l'URI : " + uri);
-				return null;
+				return false;
 			}
 			byte[] imageBytes;
 			try {
@@ -260,7 +295,7 @@ public class ImagePicker extends Activity implements Runnable {
 
 			if (responseCode != HttpURLConnection.HTTP_OK) {
 				Log.e(LOG_TAG, "Échec de l'upload, code : " + responseCode);
-				return null;
+				return false;
 			}
 
 			InputStream responseStream = conn.getInputStream();
@@ -280,18 +315,16 @@ public class ImagePicker extends Activity implements Runnable {
 
 			if (picUrl == null || picUrl.isEmpty()) {
 				Log.e(LOG_TAG, "Pas de picURL dans la réponse");
-				return null;
+				return false;
 			}
 
-			if (resizedUrl != null && !resizedUrl.isEmpty()) {
-				return "[url=" + picUrl + "][img]" + resizedUrl + "[/img][/url]";
-			} else {
-				return "[img]" + picUrl + "[/img]";
-			}
+			uploadedPicUrl = picUrl;
+			uploadedResizedUrl = (resizedUrl != null && !resizedUrl.isEmpty()) ? resizedUrl : null;
+			return true;
 
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "Exception lors de l'upload : " + e.getMessage(), e);
-			return null;
+			return false;
 		}
 	}
 }
