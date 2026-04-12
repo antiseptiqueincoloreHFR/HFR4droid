@@ -120,6 +120,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.Manifest;
+import android.content.ContentValues;
+import android.content.pm.PackageManager;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -139,6 +144,8 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
 {
     private static final String POST_LOADING 	= ">¤>¤>¤>¤>¤...post_loading...<¤<¤<¤<¤<¤";
     private static final String DOWNLOAD_DIR 	= "/HFR4droid/";
+    private static final int REQUEST_WRITE_STORAGE = 1001;
+    private Runnable pendingSaveOperation = null;
 
     private static Boolean oldCitation = null;
 
@@ -532,6 +539,24 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
         searchPanel.setVisibility(View.GONE);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_WRITE_STORAGE)
+        {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                if (pendingSaveOperation != null) pendingSaveOperation.run();
+            }
+            else
+            {
+                Toast.makeText(this, getString(R.string.save_image_failed), Toast.LENGTH_LONG).show();
+            }
+            pendingSaveOperation = null;
+        }
+    }
+
     private int getDisplayWidth()
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
@@ -919,11 +944,13 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
         {
             abstract class ImageCallback implements Runnable
             {
-                protected File image = null;
+                protected Uri savedUri = null;
+                protected String savedDisplayPath = null;
 
-                public void run(File image)
+                public void run(Uri savedUri, String savedDisplayPath)
                 {
-                    this.image = image;
+                    this.savedUri = savedUri;
+                    this.savedDisplayPath = savedDisplayPath;
                     run();
                 }
             }
@@ -940,7 +967,22 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                     {
                         private void saveImage(final String url, final boolean compressToPng, final ImageCallback callback)
                         {
-                            new ProgressDialogAsyncTask<String, Void, File>(PostsActivity.this)
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
+                                    checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                            {
+                                pendingSaveOperation = new Runnable()
+                                {
+                                    public void run() { executeSave(url, compressToPng, callback); }
+                                };
+                                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_STORAGE);
+                                return;
+                            }
+                            executeSave(url, compressToPng, callback);
+                        }
+
+                        private void executeSave(final String url, final boolean compressToPng, final ImageCallback callback)
+                        {
+                            new ProgressDialogAsyncTask<String, Void, Uri>(PostsActivity.this)
                             {
                                 @Override
                                 protected void onPreExecute()
@@ -951,49 +993,22 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                                 }
 
                                 @Override
-                                protected File doInBackground(String... url)
+                                protected Uri doInBackground(String... params)
                                 {
                                     setThreadId();
                                     try
                                     {
-                                        File dir = new File(Environment.getExternalStorageDirectory() + DOWNLOAD_DIR);
-                                        if (!dir.exists()) dir.mkdirs();
-                                        String originalFileName = url[0].substring(url[0].lastIndexOf('/') + 1, url[0].length());
-                                        File imgFile = null;
+                                        String imageUrl = params[0];
+                                        String originalFileName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
 
-                                        if (compressToPng)
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
                                         {
-                                            Bitmap imgBitmap = imgBitmapHttpClient.doGet(url[0]);
-                                            if (imgBitmap == null) return null;
-                                            String newFileName = originalFileName + ".png";
-                                            if (originalFileName.lastIndexOf('.') != -1)
-                                            {
-                                                newFileName = originalFileName.substring(0, originalFileName.lastIndexOf('.')) + ".png";
-                                            }
-                                            imgFile = new File(Environment.getExternalStorageDirectory() + DOWNLOAD_DIR, newFileName);
-                                            OutputStream fos = new FileOutputStream(imgFile);
-                                            imgBitmap.compress(CompressFormat.PNG, 90, fos);
-                                            fos.close();
+                                            return saveWithMediaStore(imageUrl, originalFileName);
                                         }
                                         else
                                         {
-                                            ByteArrayInputStream input = imgHttpClient.doGet(url[0]);
-                                            if (input == null) return null;
-                                            ByteArrayBuffer baf = new ByteArrayBuffer(50);
-                                            int current = 0;
-                                            while ((current = input.read()) != -1)
-                                            {
-                                                baf.append((byte) current);
-                                            }
-                                            if (originalFileName.lastIndexOf('.') == -1) originalFileName += ".jpg";
-                                            imgFile = new File(Environment.getExternalStorageDirectory() + DOWNLOAD_DIR, originalFileName);
-                                            FileOutputStream fos = new FileOutputStream(imgFile);
-                                            fos.write(baf.toByteArray());
-                                            fos.close();
-                                            input.close();
+                                            return saveToLegacyStorage(imageUrl, originalFileName);
                                         }
-
-                                        return imgFile;
                                     }
                                     catch (Exception e)
                                     {
@@ -1002,23 +1017,118 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                                     }
                                 }
 
+                                private Uri saveWithMediaStore(String imageUrl, String originalFileName) throws Exception
+                                {
+                                    String displayName;
+                                    String mimeType;
+                                    if (compressToPng)
+                                    {
+                                        String base = originalFileName.contains(".") ?
+                                                originalFileName.substring(0, originalFileName.lastIndexOf('.')) : originalFileName;
+                                        displayName = base + ".png";
+                                        mimeType = "image/png";
+                                    }
+                                    else
+                                    {
+                                        if (originalFileName.lastIndexOf('.') == -1) originalFileName += ".jpg";
+                                        displayName = originalFileName;
+                                        mimeType = originalFileName.toLowerCase().endsWith(".png") ? "image/png" : "image/jpeg";
+                                    }
+
+                                    ContentValues values = new ContentValues();
+                                    values.put(MediaStore.Images.Media.DISPLAY_NAME, displayName);
+                                    values.put(MediaStore.Images.Media.MIME_TYPE, mimeType);
+                                    values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures" + DOWNLOAD_DIR);
+                                    values.put(MediaStore.Images.Media.IS_PENDING, 1);
+
+                                    Uri imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                                    if (imageUri == null) return null;
+
+                                    try (OutputStream out = getContentResolver().openOutputStream(imageUri))
+                                    {
+                                        if (compressToPng)
+                                        {
+                                            Bitmap imgBitmap = imgBitmapHttpClient.doGet(imageUrl);
+                                            if (imgBitmap == null) { getContentResolver().delete(imageUri, null, null); return null; }
+                                            imgBitmap.compress(CompressFormat.PNG, 90, out);
+                                        }
+                                        else
+                                        {
+                                            ByteArrayInputStream input = imgHttpClient.doGet(imageUrl);
+                                            if (input == null) { getContentResolver().delete(imageUri, null, null); return null; }
+                                            byte[] buffer = new byte[4096];
+                                            int len;
+                                            while ((len = input.read(buffer)) != -1) out.write(buffer, 0, len);
+                                            input.close();
+                                        }
+                                    }
+
+                                    values.clear();
+                                    values.put(MediaStore.Images.Media.IS_PENDING, 0);
+                                    getContentResolver().update(imageUri, values, null, null);
+                                    return imageUri;
+                                }
+
+                                private Uri saveToLegacyStorage(String imageUrl, String originalFileName) throws Exception
+                                {
+                                    File dir = new File(Environment.getExternalStorageDirectory() + DOWNLOAD_DIR);
+                                    if (!dir.exists()) dir.mkdirs();
+                                    File imgFile;
+
+                                    if (compressToPng)
+                                    {
+                                        Bitmap imgBitmap = imgBitmapHttpClient.doGet(imageUrl);
+                                        if (imgBitmap == null) return null;
+                                        String newFileName = originalFileName.contains(".") ?
+                                                originalFileName.substring(0, originalFileName.lastIndexOf('.')) + ".png" :
+                                                originalFileName + ".png";
+                                        imgFile = new File(dir, newFileName);
+                                        OutputStream fos = new FileOutputStream(imgFile);
+                                        imgBitmap.compress(CompressFormat.PNG, 90, fos);
+                                        fos.close();
+                                    }
+                                    else
+                                    {
+                                        ByteArrayInputStream input = imgHttpClient.doGet(imageUrl);
+                                        if (input == null) return null;
+                                        ByteArrayBuffer baf = new ByteArrayBuffer(50);
+                                        int current = 0;
+                                        while ((current = input.read()) != -1) baf.append((byte) current);
+                                        if (originalFileName.lastIndexOf('.') == -1) originalFileName += ".jpg";
+                                        imgFile = new File(dir, originalFileName);
+                                        FileOutputStream fos = new FileOutputStream(imgFile);
+                                        fos.write(baf.toByteArray());
+                                        fos.close();
+                                        input.close();
+                                    }
+                                    return Uri.fromFile(imgFile);
+                                }
+
                                 @Override
-                                protected void onPostExecute(File imageFile)
+                                protected void onPostExecute(Uri savedUri)
                                 {
                                     progressDialog.dismiss();
-                                    if (callback != null) callback.run(imageFile);
+                                    if (callback != null) callback.run(savedUri, "Pictures" + DOWNLOAD_DIR);
                                 }
                             }.execute(url);
                         }
 
-                        private String[] getExif(String path)
+                        private String[] getExif(Uri uri)
                         {
-                            if (Build.VERSION.SDK_INT < 5) return null;
-
                             String[] result = null;
                             try
                             {
-                                ExifInterface exif = new ExifInterface(path);
+                                ExifInterface exif;
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                                {
+                                    ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(uri, "r");
+                                    exif = new ExifInterface(pfd.getFileDescriptor());
+                                    pfd.close();
+                                }
+                                else
+                                {
+                                    exif = new ExifInterface(uri.getPath());
+                                }
                                 List<String> data = new ArrayList<String>();
 
                                 // Date du cliché
@@ -1144,9 +1254,9 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                                 {
                                     public void run()
                                     {
-                                        if (image != null)
+                                        if (savedUri != null)
                                         {
-                                            Toast.makeText(PostsActivity.this, getString(R.string.save_image_ok, image.getParent()), Toast.LENGTH_LONG).show();
+                                            Toast.makeText(PostsActivity.this, getString(R.string.save_image_ok, savedDisplayPath), Toast.LENGTH_LONG).show();
                                         }
                                     }
                                 });
@@ -1157,9 +1267,9 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                                 {
                                     public void run()
                                     {
-                                        if (image != null)
+                                        if (savedUri != null)
                                         {
-                                            Toast.makeText(PostsActivity.this, getString(R.string.save_image_ok, image.getParent()), Toast.LENGTH_LONG).show();
+                                            Toast.makeText(PostsActivity.this, getString(R.string.save_image_ok, savedDisplayPath), Toast.LENGTH_LONG).show();
                                         }
                                     }
                                 });
@@ -1170,12 +1280,12 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                                 {
                                     public void run()
                                     {
-                                        if (image != null)
+                                        if (savedUri != null)
                                         {
                                             Intent share = new Intent(Intent.ACTION_SEND);
                                             share.setType("image/*");
-                                            Uri uri = Uri.fromFile(image);
-                                            share.putExtra(Intent.EXTRA_STREAM, uri);
+                                            share.putExtra(Intent.EXTRA_STREAM, savedUri);
+                                            share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                                             startActivity(Intent.createChooser(share, getString(R.string.share_image)));
                                         }
                                     }
@@ -1198,9 +1308,9 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
                                     {
                                         public void run()
                                         {
-                                            if (image != null)
+                                            if (savedUri != null)
                                             {
-                                                String[] exifData = getExif(image.getAbsolutePath());
+                                                String[] exifData = getExif(savedUri);
                                                 if (exifData != null)
                                                 {
                                                     if (exifData.length > 0)
