@@ -317,6 +317,7 @@ public class CategoriesActivity extends	info.toyonos.hfr4droid.common.activity.C
 				{
 					logout();
 					stopMpTimerCheckService();
+					clearNotifications();
 					onLogout();
 				}
 				break;

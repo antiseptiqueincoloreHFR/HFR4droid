@@ -28,6 +28,9 @@ import android.util.Log;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKeys;
+
 /**
  * <p>Classe représentant l'application HFR4droid. Permet de centraliser les instances
  * du <code>HttpClientHelper</code> et du <code>MDDataRetriever</code></p>
@@ -70,6 +73,7 @@ public class HFR4droidApplication extends Application
 	private HFRMessageSender msgSender;
 	private Map<String, Profile> profiles;
 	private boolean isMonoCore;
+	private SharedPreferences encryptedPrefs;
 
 	@Override
 	public void onCreate()
@@ -272,16 +276,80 @@ public class HFR4droidApplication extends Application
 		return settings.getBoolean(PREF_DBLTAP_ENABLE, Boolean.parseBoolean(getString(R.string.pref_dbltap_enable_default)));
 	}
 	
+	/**
+	 * Retourne l'instance EncryptedSharedPreferences (créée paresseusement).
+	 * En cas d'échec (rare), retourne null.
+	 */
+	private SharedPreferences getEncryptedPrefsInstance()
+	{
+		if (encryptedPrefs == null)
+		{
+			try
+			{
+				String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+				encryptedPrefs = EncryptedSharedPreferences.create(
+					"hfr_secure_prefs",
+					masterKeyAlias,
+					this,
+					EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+					EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+				);
+			}
+			catch (Exception e)
+			{
+				Log.e(TAG, "Impossible de créer EncryptedSharedPreferences", e);
+			}
+		}
+		return encryptedPrefs;
+	}
+
+	/**
+	 * Lit une credential depuis le stockage chiffré.
+	 * Effectue au passage la migration si une valeur en clair existe encore.
+	 */
+	public String getEncryptedCredential(String key)
+	{
+		SharedPreferences secure = getEncryptedPrefsInstance();
+		if (secure == null) return null;
+
+		// Migration : si une valeur en clair existe encore dans les prefs standards,
+		// la transférer dans le stockage chiffré puis la supprimer.
+		SharedPreferences plain = PreferenceManager.getDefaultSharedPreferences(this);
+		if (plain.contains(key))
+		{
+			String plainValue = plain.getString(key, null);
+			if (plainValue != null && !plainValue.isEmpty())
+			{
+				secure.edit().putString(key, plainValue).apply();
+			}
+			plain.edit().remove(key).apply();
+		}
+
+		return secure.getString(key, null);
+	}
+
+	/**
+	 * Sauvegarde une credential dans le stockage chiffré.
+	 */
+	public void setEncryptedCredential(String key, String value)
+	{
+		SharedPreferences secure = getEncryptedPrefsInstance();
+		if (secure != null)
+		{
+			secure.edit().putString(key, value).apply();
+		}
+	}
+
 	public String getPreloadingPseudo()
 	{
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-		return settings.getString(PREF_PRELOADING_PSEUDO, getString(R.string.pref_preloading_pseudo_default));
+		String value = getEncryptedCredential(PREF_PRELOADING_PSEUDO);
+		return value != null ? value : getString(R.string.pref_preloading_pseudo_default);
 	}
 
 	public String getPreloadingPassword()
 	{
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-		return settings.getString(PREF_PRELOADING_PASSWORD, getString(R.string.pref_preloading_pseudo_default));
+		String value = getEncryptedCredential(PREF_PRELOADING_PASSWORD);
+		return value != null ? value : getString(R.string.pref_preloading_pseudo_default);
 	}
 	
 	public boolean isPreloadingMultiSet()

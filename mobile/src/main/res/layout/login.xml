@@ -12,6 +12,8 @@
         	android:id="@+id/inputUser"
         	android:lines="1"
         	android:inputType="text"
+            android:autofillHints="username"
+            android:importantForAutofill="yes"
             android:padding="3dip" />
     </TableRow>
     <TableRow>
@@ -22,6 +24,8 @@
         	android:id="@+id/inputPass"
         	android:lines="1"
             android:inputType="textPassword"
+            android:autofillHints="password"
+            android:importantForAutofill="yes"
             android:padding="3dip" />
     </TableRow>
 </TableLayout>

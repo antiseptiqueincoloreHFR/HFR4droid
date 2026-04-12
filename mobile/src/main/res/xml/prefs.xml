@@ -42,12 +42,12 @@
 
 	<PreferenceCategory
 		android:title="@string/pref_preloading_title">
-		<EditTextPreference
+		<info.toyonos.hfr4droid.common.activity.EncryptedCredentialPreference
 			android:key="PrefPreloadingPseudo"
 			android:summary="@string/pref_preloading_pseudo_summary"
 			android:title="@string/pref_preloading_pseudo_title"
 			android:defaultValue="@string/pref_preloading_pseudo_default" />
-		<EditTextPreference
+		<info.toyonos.hfr4droid.common.activity.EncryptedCredentialPreference
 			android:key="PrefPreloadingPassword"
 			android:summary="@string/pref_preloading_password_summary"
 			android:title="@string/pref_preloading_password_title"

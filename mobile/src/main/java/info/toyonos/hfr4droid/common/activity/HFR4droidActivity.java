@@ -14,6 +14,7 @@ import info.toyonos.hfr4droid.common.core.data.DataRetrieverException;
 import info.toyonos.hfr4droid.common.core.data.MDDataRetriever;
 import info.toyonos.hfr4droid.common.core.message.HFRMessageSender;
 import info.toyonos.hfr4droid.common.service.MpCheckService;
+import info.toyonos.hfr4droid.common.service.MpNotifyService;
 import info.toyonos.hfr4droid.common.service.MpTimerCheckService;
 import info.toyonos.hfr4droid.common.util.asynctask.DataRetrieverAsyncTask;
 import info.toyonos.hfr4droid.common.util.asynctask.PreLoadingAsyncTask.PreLoadingCompleteListener;
@@ -353,6 +354,7 @@ public abstract class HFR4droidActivity extends Activity
 					{
 						logout();
 						stopMpTimerCheckService();
+						clearNotifications();
 						setTitle();
 						onLogout();
 					}
@@ -537,6 +539,7 @@ public abstract class HFR4droidActivity extends Activity
 
 	protected void clearNotifications()
 	{
+		MpNotifyService.currentNewMps = 0;
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancel(MpTimerCheckService.NOTIFICATION_ID);
 	}
@@ -570,8 +573,10 @@ public abstract class HFR4droidActivity extends Activity
 	{
 		if (loginDialog == null)
 		{
-			Context mContext = getApplicationContext();
-			LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
+			// Utiliser le contexte de l'Activity (et non getApplicationContext()) pour que
+			// le framework d'autofill Android (et les gestionnaires de mots de passe) puissent
+			// détecter et remplir les champs login/mot de passe.
+			LayoutInflater inflater = LayoutInflater.from(HFR4droidActivity.this);
 			View layout = inflater.inflate(R.layout.login, null);
 
 			AlertDialog.Builder builder = getDialogBuilder(HFR4droidActivity.this);
