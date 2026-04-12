@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">HFR4droid</string>
     <string name="splash_title">Version %s - Copyleft ToYonos</string>
-    <string name="upload_hfr_rehost">Upload sur hfrRehost</string>
+    <string name="upload_hfr_rehost">Upload sur DiberieRehost</string>
 	
 	<string name="nav_go_to">Aller à...</string>
 	<string name="topic_nav_last_read_page">Aller à la dernière page lue</string>
@@ -71,7 +71,7 @@
 	<string name="button_post_url_right">[/url]</string>
 	<string name="button_post_img_left">[img]</string>
 	<string name="button_post_img_right">[/img]</string>
-	<string name="button_post_hfr_rehost_left">hfr</string>
+	<string name="button_post_hfr_rehost_left">Diberie</string>
 	<string name="button_post_hfr_rehost_right">Rehost</string>
 	<string name="button_post_puce_left">[*]</string>
 	<string name="button_post_puce_right"></string>
