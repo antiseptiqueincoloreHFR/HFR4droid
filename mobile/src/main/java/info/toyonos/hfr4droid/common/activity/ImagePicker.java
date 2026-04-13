@@ -104,7 +104,7 @@ public class ImagePicker extends Activity implements Runnable {
 							public void onClick(DialogInterface arg0, int arg1) {
 								imageUri = data.getData();
 								dialog = HFR4droidActivity.isDarkTheme(ImagePicker.this) ?
-									new ProgressDialog(ImagePicker.this, android.R.style.Theme_Holo_Dialog) :
+									new ProgressDialog(ImagePicker.this, R.style.AppThemeDark) :
 									new ProgressDialog(ImagePicker.this);
 								dialog.setMessage(getString(R.string.loading_hfr_rehost));
 								dialog.setIndeterminate(true);

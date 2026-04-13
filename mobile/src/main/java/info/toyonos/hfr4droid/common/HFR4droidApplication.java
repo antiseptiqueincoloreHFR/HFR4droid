@@ -21,10 +21,12 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -74,6 +76,21 @@ public class HFR4droidApplication extends Application
 	private Map<String, Profile> profiles;
 	private boolean isMonoCore;
 	private SharedPreferences encryptedPrefs;
+
+	@Override
+	protected void attachBaseContext(Context base)
+	{
+		String themeKey = PreferenceManager.getDefaultSharedPreferences(base)
+			.getString(PREF_THEME, "default");
+		if ("dark".equals(themeKey))
+		{
+			super.attachBaseContext(new ContextThemeWrapper(base, R.style.AppThemeDark));
+		}
+		else
+		{
+			super.attachBaseContext(base);
+		}
+	}
 
 	@Override
 	public void onCreate()

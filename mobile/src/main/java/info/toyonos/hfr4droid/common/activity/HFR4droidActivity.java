@@ -142,10 +142,27 @@ public abstract class HFR4droidActivity extends Activity
 	}
 
 	@Override
+	protected void attachBaseContext(Context newBase)
+	{
+		String themeKey = android.preference.PreferenceManager
+			.getDefaultSharedPreferences(newBase)
+			.getString(HFR4droidApplication.PREF_THEME, "default");
+		if ("dark".equals(themeKey))
+		{
+			super.attachBaseContext(new android.view.ContextThemeWrapper(newBase, R.style.AppThemeDark));
+		}
+		else
+		{
+			super.attachBaseContext(newBase);
+		}
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		if (isDarkTheme(this))
 		{
+			setTheme(R.style.AppThemeDark);
 			getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(
 				getResources().getColor(R.color.dark_list_background)));
 		}
@@ -409,13 +426,17 @@ public abstract class HFR4droidActivity extends Activity
 	{
 		getActionBar().setDisplayShowHomeEnabled(false);
 
+		if (isDarkTheme(this))
+		{
+			getActionBar().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(
+				getResources().getColor(R.color.dark_actionbar_background)));
+		}
+
 		int titleId = Resources.getSystem().getIdentifier("action_bar_title", "id", "android");
 		if(titleId == 0) titleId = R.id.action_bar_title;
 
 		final TextView appName = (TextView) findViewById(titleId);
-		//Typeface face = Typeface.createFromAsset(getAssets(), "take_out_the_garbage.ttf");
-		//appName.setTypeface(face);
-		appName.setTextColor(Color.parseColor("#1A3A60"));
+		appName.setTextColor(isDarkTheme(this) ? Color.WHITE : Color.parseColor("#1A3A60"));
 		appName.setTypeface(null, Typeface.BOLD);
 		appName.setTextSize(15);
 	}

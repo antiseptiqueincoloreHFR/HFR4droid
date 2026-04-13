@@ -4,12 +4,22 @@
 	<style name="AppTheme" parent="@android:style/Theme.Holo.Light">
     	<!-- <item name="actionButtonStyle">@style/MyActionButtonStyle</item> -->
     	<item name="android:actionButtonStyle">@style/MyActionButtonStyle</item>
-    	
+
     	<!-- <item name="actionBarStyle">@style/MyActionBarStyle</item> -->
     	<item name="android:actionBarStyle">@style/MyActionBarStyle</item>
 	</style>
 
+	<style name="AppThemeDark" parent="@android:style/Theme.Holo">
+    	<item name="android:actionButtonStyle">@style/MyActionButtonStyleDark</item>
+    	<item name="android:actionBarStyle">@style/MyActionBarStyleDark</item>
+	</style>
+
 	<style name="MyActionButtonStyle" parent="@android:style/Widget.Holo.Light.ActionButton">
+	    <item name="android:minWidth">32dip</item>
+	    <item name="android:padding">0dip</item>
+	</style>
+
+	<style name="MyActionButtonStyleDark" parent="@android:style/Widget.Holo.ActionButton">
 	    <item name="android:minWidth">32dip</item>
 	    <item name="android:padding">0dip</item>
 	</style>
@@ -18,6 +28,9 @@
 		<!-- <item name="background">@drawable/degrad_plus</item> -->
     	<item name="android:background">@drawable/degrad_plus</item>
     </style>
+
+	<style name="MyActionBarStyleDark" parent="@android:style/Widget.Holo.ActionBar">
+	</style>
     
 	<!-- Thème par défaut -->
 
@@ -52,6 +65,7 @@
 	<!-- Thème "dark" -->
 	
 	<color name="dark_list_background">#303030</color>
+	<color name="dark_actionbar_background">#1E1E1E</color>
 	<color name="dark_list_divider">#676767</color>
 	<color name="dark_text1">#F7F7F7</color>
 	<color name="dark_text2">#DADADA</color>

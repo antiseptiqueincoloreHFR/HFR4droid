@@ -33,7 +33,9 @@ public class HFR4droidPrefs extends PreferenceActivity
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		if (HFR4droidActivity.isDarkTheme(this))
 		{
-			setTheme(android.R.style.Theme_Holo);
+			setTheme(R.style.AppThemeDark);
+			getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(
+				getResources().getColor(R.color.dark_list_background)));
 		}
 		super.onCreate(savedInstanceState);
 		switchFullscreen(PreferenceManager.getDefaultSharedPreferences(this)
