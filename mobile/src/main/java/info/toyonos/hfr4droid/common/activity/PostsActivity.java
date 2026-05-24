@@ -105,6 +105,8 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.ValueCallback;
+import java.lang.ref.WeakReference;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -866,10 +868,10 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
     {
         final WebView webView = new NonLeakingWebView(this)
         {
-            //private boolean actionBarVisible = true;
-
             private int initialPosition;
             private WebView innerRef = this;
+            private boolean mWasPinching = false;
+            private final WeakReference<DragableSpace> mSpaceRef = new WeakReference<>(space);
 
             private Runnable scrollerTask = new Runnable()
             {
@@ -897,18 +899,53 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
             @Override
             public boolean onTouchEvent(MotionEvent ev)
             {
-                if (ev.getAction() == MotionEvent.ACTION_UP) {
-
+                if (ev.getAction() == MotionEvent.ACTION_UP)
+                {
                     startScrollerTask();
+                    if (mWasPinching)
+                    {
+                        mWasPinching = false;
+                        final WebView self = this;
+                        // Interroger le zoom réel via JS après que l'animation de zoom soit terminée
+                        postDelayed(new Runnable() {
+                            public void run() {
+                                self.evaluateJavascript(
+                                    "(function(){return window.visualViewport ? window.visualViewport.scale : 1;})()",
+                                    new ValueCallback<String>() {
+                                        public void onReceiveValue(String value) {
+                                            DragableSpace s = mSpaceRef.get();
+                                            if (s != null) {
+                                                try {
+                                                    s.setScrollingEnabled(Float.parseFloat(value) < 1.1f);
+                                                } catch (NumberFormatException e) {
+                                                    s.setScrollingEnabled(true);
+                                                }
+                                            }
+                                        }
+                                    }
+                                );
+                            }
+                        }, 400);
+                    }
                 }
 
                 boolean result = false;
                 try
                 {
-                    result = ev != null ? gestureDetector.onTouchEvent(ev) : false;
-                    if (!result)
+                    if (ev.getPointerCount() > 1)
                     {
+                        mWasPinching = true;
+                        DragableSpace s = mSpaceRef.get();
+                        if (s != null) s.setScrollingEnabled(false);
                         result = super.onTouchEvent(ev);
+                    }
+                    else
+                    {
+                        result = ev != null ? gestureDetector.onTouchEvent(ev) : false;
+                        if (!result)
+                        {
+                            result = super.onTouchEvent(ev);
+                        }
                     }
                 }
                 catch (NullPointerException e)
@@ -938,6 +975,9 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
             	}
             }*/
         };
+
+        // Réactiver le swipe de page pour chaque nouvelle page chargée
+        if (space != null) space.setScrollingEnabled(true);
 
         registerForContextMenu(webView);
         webView.setOnCreateContextMenuListener(new OnCreateContextMenuListener()
@@ -1978,6 +2018,9 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
         WebSettings settings = webView.getSettings();
         settings.setDefaultTextEncodingName("UTF-8");
         settings.setJavaScriptEnabled(true);
+        settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
         webView.setBackgroundColor(0);
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
 
@@ -2028,7 +2071,7 @@ public class PostsActivity extends HFR4droidMultiListActivity<List<Post>>
         }
 
         if (!preloading) setView(webView);
-        String meta = "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no\">";
+        String meta = "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
         webView.loadDataWithBaseURL(getDataRetriever().getBaseUrl(), "<html><head>" + meta + js.toString() + css.toString() + js2.toString() + "</head><body>" + postsContent.toString() + "</body></html>", "text/html", "UTF-8", null);
         invalidateOptionsMenu();
 

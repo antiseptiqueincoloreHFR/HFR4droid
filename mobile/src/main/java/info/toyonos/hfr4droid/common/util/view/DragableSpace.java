@@ -37,7 +37,13 @@ public class DragableSpace extends ViewGroup {
     private OnScreenChangeListener onScreenChangeListener = null;
 
     private float swipeSensibility = 1;
-    
+
+    private boolean scrollingEnabled = true;
+
+    public void setScrollingEnabled(boolean enabled) {
+        scrollingEnabled = enabled;
+    }
+
     public DragableSpace(Context context) {
         super(context);
         mScroller = new Scroller(context);
@@ -65,18 +71,11 @@ public class DragableSpace extends ViewGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        /*
-         * This method JUST determines whether we want to intercept the motion.
-         * If we return true, onTouchEvent will be called and we do the actual
-         * scrolling there.
-         */
+        if (!scrollingEnabled || ev.getPointerCount() > 1) {
+            mTouchState = TOUCH_STATE_REST;
+            return false;
+        }
 
-        /*
-         * Shortcut the most recurring case: the user is in the dragging state
-         * and he is moving his finger. We want to intercept this motion.
-         */
-    	
-    	
         final int action = ev.getAction();
         if ((action == MotionEvent.ACTION_MOVE) && (mTouchState != TOUCH_STATE_REST))
         {
@@ -143,6 +142,18 @@ public class DragableSpace extends ViewGroup {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (event.getPointerCount() > 1) {
+            mTouchState = TOUCH_STATE_REST;
+            if (mVelocityTracker != null) {
+                mVelocityTracker.recycle();
+                mVelocityTracker = null;
+            }
+            // Cancel any partial horizontal drag so the adjacent pre-loaded page doesn't appear
+            final int snapX = mCurrentScreen * getWidth();
+            scrollTo(snapX, 0);
+            mScrollX = snapX;
+            return false;
+        }
 
         if (mVelocityTracker == null) {
             mVelocityTracker = VelocityTracker.obtain();

@@ -30,7 +30,7 @@ android {
             dimension "HFR"
             applicationId "info.toyonos.hfr4droid"
             versionCode 85
-            versionName "15.04.26"
+            versionName "24.05.26"
         }
     }
     flavorDimensions 'HFR'
